@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from copy import copy
+from my_django_tweaks.settings import tweaks_settings
 from rest_framework import serializers
 from rest_framework.fields import (api_settings, DjangoValidationError, empty, OrderedDict, set_value, SkipField,
                                    ValidationError)
 from rest_framework.serializers import as_serializer_error, PKOnlyObject
+
+tweaks_settings.FIELDS_PARAMETER_NAME = ".fields"
+tweaks_settings.INCLUDE_FIELDS_PARAMETER_NAME = ".include_fields"
 
 
 class ContextPassing(object):
@@ -42,31 +46,31 @@ class ContextPassing(object):
                 self.field._context = self.parent._context
 
             # fields filtering
-            if "fields" in self.parent._context:
-                self.old_fields = self.parent._context["fields"]
+            if tweaks_settings.FIELDS_PARAMETER_NAME in self.parent._context:
+                self.old_fields = self.parent._context[tweaks_settings.FIELDS_PARAMETER_NAME]
             else:
                 self.on_exit_delete_fields = True
-            self.parent._context["fields"] = self.only_fields
+            self.parent._context[tweaks_settings.FIELDS_PARAMETER_NAME] = self.only_fields
 
             # on demand fields
-            if "include_fields" in self.parent._context:
-                self.old_include_fields = self.parent._context["include_fields"]
+            if tweaks_settings.INCLUDE_FIELDS_PARAMETER_NAME in self.parent._context:
+                self.old_include_fields = self.parent._context[tweaks_settings.INCLUDE_FIELDS_PARAMETER_NAME]
             else:
                 self.on_exit_delete_include_fields = True
-            self.parent._context["include_fields"] = self.include_fields
+            self.parent._context[tweaks_settings.INCLUDE_FIELDS_PARAMETER_NAME] = self.include_fields
 
     def __exit__(self, type, value, traceback):
         if self.has_context:
             # modification was done on parent's context, so we roll them back before setting the old contexts
             if self.on_exit_delete_fields:
-                del self.parent._context["fields"]
+                del self.parent._context[tweaks_settings.FIELDS_PARAMETER_NAME]
             else:
-                self.parent._context["fields"] = self.old_fields
+                self.parent._context[tweaks_settings.FIELDS_PARAMETER_NAME] = self.old_fields
 
             if self.on_exit_delete_include_fields:
-                del self.parent._context["include_fields"]
+                del self.parent._context[tweaks_settings.INCLUDE_FIELDS_PARAMETER_NAME]
             else:
-                self.parent._context["include_fields"] = self.old_include_fields
+                self.parent._context[tweaks_settings.INCLUDE_FIELDS_PARAMETER_NAME] = self.old_include_fields
 
             # restoring old context
             if self.is_many:
@@ -78,11 +82,11 @@ class ContextPassing(object):
 def pass_context(field_name, context):
     new_context = copy(context)
     query_params = context["request"].query_params if "request" in context else {}
-    only_fields = set(context.get("fields", query_params.get("fields", "").split(",")))
-    include_fields = set(context.get("include_fields", query_params.get("include_fields", "").split(",")))
+    only_fields = set(context.get(tweaks_settings.FIELDS_PARAMETER_NAME, query_params.get(tweaks_settings.FIELDS_PARAMETER_NAME, "").split(",")))
+    include_fields = set(context.get(tweaks_settings.INCLUDE_FIELDS_PARAMETER_NAME, query_params.get(tweaks_settings.INCLUDE_FIELDS_PARAMETER_NAME, "").split(",")))
 
-    new_context["fields"] = ContextPassing.filter_fields(field_name, only_fields)
-    new_context["include_fields"] = ContextPassing.filter_fields(field_name, include_fields)
+    new_context[tweaks_settings.FIELDS_PARAMETER_NAME] = ContextPassing.filter_fields(field_name, only_fields)
+    new_context[tweaks_settings.INCLUDE_FIELDS_PARAMETER_NAME] = ContextPassing.filter_fields(field_name, include_fields)
 
     return new_context
 
@@ -147,8 +151,8 @@ class SerializerCustomizationMixin(object):
         return self.add_main_fields_names_from_nested(fields)
 
     def get_only_fields_and_include_fields(self):
-        only_fields = self.get_fields_for_serialization("fields")
-        include_fields = self.get_fields_for_serialization("include_fields")
+        only_fields = self.get_fields_for_serialization(tweaks_settings.FIELDS_PARAMETER_NAME)
+        include_fields = self.get_fields_for_serialization(tweaks_settings.INCLUDE_FIELDS_PARAMETER_NAME)
 
         return only_fields, include_fields
 
@@ -159,7 +163,7 @@ class SerializerCustomizationMixin(object):
 
     def check_if_needs_serialization(self, field_name, fields, include_fields, on_demand_fields):
         if fields:
-            # if fields are defined for a given level, we ignore "include_fields"
+            # if fields are defined for a given level, we ignore tweaks_settings.INCLUDE_FIELDS_PARAMETER_NAME
             if field_name not in fields:
                 return False
         elif field_name in on_demand_fields and field_name not in include_fields:

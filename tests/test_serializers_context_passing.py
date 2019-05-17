@@ -173,8 +173,8 @@ class OnDemandFieldsAndNestedFieldsFilteringTestCase(APITestCase):
             }
         )
 
-        # when added "include_fields=on_demand_fields - field is included
-        response = self.client.get(cp_url, {"include_fields": "on_demand_field"})
+        # when added ".include_fields=on_demand_fields - field is included
+        response = self.client.get(cp_url, {".include_fields": "on_demand_field"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.data, {
@@ -189,8 +189,8 @@ class OnDemandFieldsAndNestedFieldsFilteringTestCase(APITestCase):
             }
         )
 
-        # using fields
-        response = self.client.get(cp_url, {"fields": "name,on_demand_field,second_on_demand_field"})
+        # using .fields
+        response = self.client.get(cp_url, {".fields": "name,on_demand_field,second_on_demand_field"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.data, {
@@ -200,9 +200,9 @@ class OnDemandFieldsAndNestedFieldsFilteringTestCase(APITestCase):
             }
         )
 
-        # nested include_fields
+        # nested .include_fields
         response = self.client.get(cp_url, {
-            "include_fields": "on_demand_field,second_on_demand_field,second_data__on_demand_field"
+            ".include_fields": "on_demand_field,second_on_demand_field,second_data__on_demand_field"
         })
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
@@ -220,9 +220,9 @@ class OnDemandFieldsAndNestedFieldsFilteringTestCase(APITestCase):
             }
         )
 
-        # using fields: nested
+        # using .fields: nested
         response = self.client.get(cp_url, {
-            "fields": "name,on_demand_field,second_data__name,second_data__on_demand_field"
+            ".fields": "name,on_demand_field,second_data__name,second_data__on_demand_field"
         })
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
@@ -236,10 +236,10 @@ class OnDemandFieldsAndNestedFieldsFilteringTestCase(APITestCase):
             }
         )
 
-        # using fields & include_fields (on different levels) & on three levels
+        # using .fields & .include_fields (on different levels) & on three levels
         response = self.client.get(cp_url, {
-            "fields": "name,second_data,second_data__third_data",
-            "include_fields": "second_data__third_data__on_demand_field"
+            ".fields": "name,second_data,second_data__third_data",
+            ".include_fields": "second_data__third_data__on_demand_field"
         })
         self.assertEqual(response.status_code, 200)
         self.assertEqual(

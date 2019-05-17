@@ -133,11 +133,11 @@ class SerializersTestCase(APITestCase):
         self.assertEqual(set(serializer.data.keys()), {"a", "b"})
 
         # pass through context
-        serializer = SampleModelSerializer(instance=self.sample1, context={"fields": ("a", )})
+        serializer = SampleModelSerializer(instance=self.sample1, context={".fields": ("a", )})
         self.assertEqual(set(serializer.data.keys()), {"a"})
 
         # pass through request
-        request = Request(factory.get("/", {"fields": "b,c"}))
+        request = Request(factory.get("/", {".fields": "b,c"}))
         serializer = SampleModelSerializer(instance=self.sample1, context={"request": request})
         self.assertEqual(set(serializer.data.keys()), {"b"})
 

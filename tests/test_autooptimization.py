@@ -196,7 +196,7 @@ class TestAutoOptimization(test_utils.QueryCountingApiTestCase):
         self.assertIn("tests_autooptimization3model", query_stack[0][0])
 
     def test_select_related_with_filters(self):
-        response = self.client.get(reverse("simple-select-related"), {"fields": "name,fk_2_data,fk_2_data__name"})
+        response = self.client.get(reverse("simple-select-related"), {".fields": "name,fk_2_data,fk_2_data__name"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 27)
         self.assertEqual(response.data[0]["name"], "m1")
@@ -225,7 +225,7 @@ class TestAutoOptimization(test_utils.QueryCountingApiTestCase):
         self.assertEqual(test_utils.TestQueryCounter().get_counter(), 5)
 
     def test_prefetch_related_with_filters(self):
-        response = self.client.get(reverse("simple-prefetch-related"), {"fields": "name,reverse_2_1,reverse_2_1_data"})
+        response = self.client.get(reverse("simple-prefetch-related"), {".fields": "name,reverse_2_1,reverse_2_1_data"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["name"], "m3")
         self.assertEqual(len(response.data["reverse_2_1"]), 3)
@@ -283,7 +283,7 @@ class TestAutoOptimization(test_utils.QueryCountingApiTestCase):
 
     def test_prefetch_with_select_related_with_include_fields(self):
         response = self.client.get(reverse("prefetch-with-select-related"), {
-            "include_fields": "reverse_2_1_data__reverse_1_data__sample_m2m_data"
+            ".include_fields": "reverse_2_1_data__reverse_1_data__sample_m2m_data"
         })
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 3)

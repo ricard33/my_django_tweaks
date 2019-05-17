@@ -1,0 +1,1 @@
+isort --recursive -p tests my_django_tweaks -m 0 -w 120 -fas -ds

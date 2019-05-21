@@ -34,6 +34,13 @@ def get_new_version():
 VERSION_FORMAT = '__version__ = "{}"\n'
 
 
+def validate_release_env():
+    if os.system('which twine') != 0:
+        exit("Please get twine via 'pip install twine'")
+    if os.system('which gitchangelog') != 0:
+        exit("Please get twine via 'pip install gitchangelog' or 'pip install git+git://github.com/vaab/gitchangelog.git' for Python 3.7")
+
+
 def update_version_file(version):
     new_version = VERSION_FORMAT.format(version)
     lines = []
@@ -45,6 +52,17 @@ def update_version_file(version):
                 lines.append(line)
     with open(VERSION_FILE_PATH, 'wt') as f:
         f.write("".join(lines))
+
+
+def ensure_publication(new_version_num):
+    if os.environ.get('DRY_RUN') is not None:
+        print('Run with {} mode.'.format(MESSAGE_RED.format('[DRY_RUN]')))
+
+    print('Are you sure to release as {}?[y/n]'.format(MESSAGE_YELLOW.format(new_version_num)))
+    for line in sys.stdin:
+        if line.rstrip().lower() == 'y':
+            return
+        exit('Canceled release.')
 
 
 def call_bash_script(cmd):
@@ -64,6 +82,10 @@ def tag_and_generate_changelog(new_version_num):
     call_bash_script('git commit {} -m "Update changelog for {}"'.format(CHANGELOG_PATH, new_version_num))
 
 
+def build_sdist():
+    call_bash_script('{} setup.py sdist bdist_wheel'.format(sys.executable))
+
+
 def upload_sdist(new_version_num):
     call_bash_script('twine upload "dist/my_django_tweaks-{}*"'.format(new_version_num))
 
@@ -73,44 +95,21 @@ def push_changes_to_master(new_version_num):
     call_bash_script('git push origin "{}"'.format(new_version_num))
 
 
-def ensure_publication(new_version_num):
-    if os.environ.get('DRY_RUN') is not None:
-        print('Run with {} mode.'.format(MESSAGE_RED.format('[DRY_RUN]')))
-
-    print('Are you sure to release as {}?[y/n]'.format(MESSAGE_YELLOW.format(new_version_num)))
-    for line in sys.stdin:
-        if line.rstrip().lower() == 'y':
-            return
-        exit('Canceled release.')
-
-
-def build_sdist():
-    call_bash_script('{} setup.py sdist bdist_wheel'.format(sys.executable))
-
-
-def validate_release_env():
-    if os.system('which twine') != 0:
-        exit("Please get twine via 'pip install twine'")
-    if os.system('which gitchangelog') != 0:
-        exit("Please get twine via 'pip install gitchangelog' or 'pip install git+git://github.com/vaab/gitchangelog.git' for Python 3.7")
-
-
 def main():
     validate_release_env()
 
     get_current_version()
     new_version = get_new_version()
-
     update_version_file(new_version)
 
     ensure_publication(new_version)
 
     commit_version_code(new_version)
-    build_sdist()
-
     tag_and_generate_changelog(new_version)
 
+    build_sdist()
     upload_sdist(new_version)
+
     push_changes_to_master(new_version)
 
 

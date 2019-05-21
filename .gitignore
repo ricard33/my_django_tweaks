@@ -105,3 +105,4 @@ venv.bak/
 
 # pyCharm
 .idea/
+!/PACKAGE.rst

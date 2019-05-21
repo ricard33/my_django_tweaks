@@ -1,2 +1,12 @@
 Changelog
 =========
+
+
+0.0.2 (2019-05-21)
+------------------
+- Add build script for releases. [Cédric RICARD]
+- Make fields parameter name parameterizable. [Cédric RICARD]
+- Creating project based on drf_tweaks. [Cédric RICARD]
+- Initial commit. [Cédric RICARD]
+
+

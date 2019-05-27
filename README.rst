@@ -646,4 +646,4 @@ should be deleted, add **"delete_object": True** next to it's **id** in the payl
 .. _codecov: http://codecov.io/github/ricard33/my_django_tweaks?branch=master
 
 .. |requiresio| image:: https://requires.io/github/ricard33/my_django_tweaks/requirements.svg?branch=master
-.. _requiresio: https://github.com/ricard33/my_django_tweaks
+.. _requiresio: https://requires.io/github/ricard33/my_django_tweaks/requirements/?branch=master

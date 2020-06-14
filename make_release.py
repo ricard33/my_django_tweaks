@@ -95,6 +95,10 @@ def push_changes_to_master(new_version_num):
     call_bash_script('git push origin "{}"'.format(new_version_num))
 
 
+def update_requires_io():
+    call_bash_script('requires.io update - site - t ee4a1d47749c0b7f6beed8fc8e1bd2622abcf617 - r my_django_tweaks')
+
+
 def main():
     validate_release_env()
 
@@ -111,6 +115,8 @@ def main():
     upload_sdist(new_version)
 
     push_changes_to_master(new_version)
+
+    update_requires_io()
 
 
 if __name__ == '__main__':

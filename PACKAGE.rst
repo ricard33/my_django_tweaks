@@ -71,7 +71,7 @@ If you need to make some test, it's preferable to publish the package on PyPI te
    $ twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
 Publish to PyPI server
------------------------------------------
+----------------------
 
 .. code-block:: console
 
@@ -84,3 +84,10 @@ Push to master
 
     $ git push origin master
     $ git push origin "1.0.0"
+
+Update requires.io
+------------------
+
+.. code-block:: console
+
+    $ requires.io update-site -t ee4a1d47749c0b7f6beed8fc8e1bd2622abcf617 -r my_django_tweaks

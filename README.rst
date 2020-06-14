@@ -31,6 +31,7 @@ Current tweaks
 * `Autooptimization`_
 * `Linting database usage`_
 * `Bulk edit API mixin`_
+* `Log configurator`_
 
 
 --------------------
@@ -152,20 +153,20 @@ other place you just need some basic data from it - say just name & id. You coul
 case, or even separate endpoint, but it would be easier if the client can have control over which fields get serialized.
 * You have some fields that should be serialized only for some state of the serialized object, and not for other.
 
-Both things can be achieved with our serializer. By default they check if the "fields" were passed in the context or if
-"fields" were passed as a GET parameter (in such case "request" must be present in the context), but you can define
-custom behaviour by overriding the followin method in the Serializer:
+Both things can be achieved with our serializer. By default they check if the ".fields" were passed in the context or if
+".fields" were passed as a GET parameter (in such case "request" must be present in the context), but you can define
+custom behaviour by overriding the following method in the Serializer:
 
 .. code:: python
 
-    def get_fields_for_serialization(self, fields):  # fields must be in ("fields", "include_fields")
+    def get_fields_for_serialization(self, fields):  # fields must be in (".fields", ".include_fields")
         return {"name", "id"}
 
 This works also with sub-serializers (using context-passing). Here is an example usage:
 
 .. code::
 
-    https://your.url?fields=some_field,other_field,nested_serializer__some_field,nested_serializer__other_field
+    https://your.url?.fields=some_field,other_field,nested_serializer__some_field,nested_serializer__other_field
 
 
 Making fields available only on demand
@@ -186,7 +187,7 @@ Rationale: it is a good practice to minimize the number of APIs, by making them 
 
 .. code::
 
-    https://your.url?include_fields=some_subserializer
+    https://your.url?.include_fields=some_subserializer
 
 
 Auto filtering and ordering
@@ -635,6 +636,31 @@ should be deleted, add **"delete_object": True** next to it's **id** in the payl
     [{"id": 1, "delete_object": True}]
 
 
+Log configurator
+----------------
+
+This module contains a single function witch allows to configure python logging
+using a configuration file. Default configuration can be provided (and commited
+with source).
+
+.. code:: python
+
+    def configure_logging(log_name, LOG_CONFIG_PATH, LOG_PATH, DEFAULT_LOG_FORMAT, RUNNING_UNITTEST):
+        ...
+
+**Parameters**
+
+* log_name: base name for configuration filename. Il will be used for both custom settings
+  and default settings. Example : if set to 'my-app', settings file lookup will occur with these names:
+
+  -  logging-my-app.py    (for new python module format)
+  -  logging-my-app.ini   (for old config format)
+  -  logging-my-app.default.py (fallback config, can be commited with sources)
+
+* LOG_CONFIG_PATH: path to the folder containing logging config files
+* LOG_PATH: path to the logs folder (used to configure fallback logger in case all config files failed to load)
+* DEFAULT_LOG_FORMAT: format used by fallback formatter
+* RUNNING_UNITTEST: set True if unittest are running. Used to disable logging during unittest (except for critical).
 
 .. |travis| image:: https://secure.travis-ci.org/ricard33/my_django_tweaks.svg?branch=master
 .. _travis: http://travis-ci.org/ricard33/my_django_tweaks?branch=master

@@ -2,6 +2,12 @@ Changelog
 =========
 
 
+0.0.4 (2020-06-14)
+------------------
+- Update 'requires_io' when creating release. [Cédric RICARD]
+- Add logging configuration. [Cédric RICARD]
+
+
 0.0.3 (2019-05-27)
 ------------------
 - Upgrade django-rest-swagger package to latest version. [Cédric

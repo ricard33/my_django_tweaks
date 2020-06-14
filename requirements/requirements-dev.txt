@@ -1,0 +1,5 @@
+-r requirements-base.txt
+-r requirements-testing.txt
+-r requirements-codestyle.txt
+Pygments
+requires.io

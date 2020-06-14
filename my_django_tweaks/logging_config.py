@@ -1,11 +1,11 @@
+from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
+
 import logging
 import logging.config
 import logging.handlers
 import os
 import sys
-
-from watchdog.events import FileSystemEventHandler
-from watchdog.observers import Observer
 
 __author__ = 'ricard'
 _watchdog_configured = False
@@ -18,9 +18,9 @@ def configure_logging(log_name, LOG_CONFIG_PATH, LOG_PATH, DEFAULT_LOG_FORMAT, R
     if RUNNING_UNITTEST and not logging.Logger.manager.loggerDict:
         # HACK to avoid logs due to DEBUG level forced by pyreadline's logger module
         try:
-            import pyreadline
+            import pyreadline   # noqa: F401
         #    except ImportError, ex:
-        except Exception as ex:
+        except Exception as ex:     # noqa: F841
             # print >> sys.stderr, "IMPORT ERROR with pyreadline:", ex.message
             pass
         # logger = logging.getLogger()

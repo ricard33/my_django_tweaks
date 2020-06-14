@@ -96,7 +96,7 @@ def push_changes_to_master(new_version_num):
 
 
 def update_requires_io():
-    call_bash_script('requires.io update - site - t ee4a1d47749c0b7f6beed8fc8e1bd2622abcf617 - r my_django_tweaks')
+    call_bash_script('requires.io update-site -t ee4a1d47749c0b7f6beed8fc8e1bd2622abcf617 -r my_django_tweaks')
 
 
 def main():

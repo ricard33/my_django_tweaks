@@ -2,5 +2,4 @@ six>=1.10
 djangorestframework>=3.7.0
 django-rest-swagger>0.3.9
 django-filter>=1.1.0
-Pygments
 watchdog

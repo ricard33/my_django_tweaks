@@ -16,8 +16,8 @@ PYTEST_ARGS = {
 
 FLAKE8_ARGS = ['my_django_tweaks', 'tests', '--ignore=E501']
 
-ISORT_ARGS = ['--recursive', '--check-only', '-o' 'uritemplate', '-p', 'tests', 'my_django_tweaks', '-m', '0', '-w', '120',
-              '-fas', '-ds']
+ISORT_ARGS = ['--check-only', '-o' 'uritemplate', '-p', 'tests', 'my_django_tweaks', '-m', '0', '-w', '120',
+              '--fas', '--ds']
 
 sys.path.append(os.path.dirname(__file__))
 

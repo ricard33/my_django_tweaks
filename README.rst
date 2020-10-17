@@ -662,6 +662,11 @@ with source).
 * DEFAULT_LOG_FORMAT: format used by fallback formatter
 * RUNNING_UNITTEST: set True if unittest are running. Used to disable logging during unittest (except for critical).
 
+WARNING
+  If you use `django.utils.log.AdminEmailHandler` as log handler, the `django.utils.log.AdminEmailHandler()` function
+  be called after the `SECRET_KEY` generation in `settings.py`.
+
+
 .. |travis| image:: https://secure.travis-ci.org/ricard33/my_django_tweaks.svg?branch=master
 .. _travis: http://travis-ci.org/ricard33/my_django_tweaks?branch=master
 

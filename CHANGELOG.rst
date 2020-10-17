@@ -2,6 +2,13 @@ Changelog
 =========
 
 
+0.0.6 (2020-10-17)
+------------------
+- Add doc for log configurator. [Cédric RICARD]
+- Fix bad import. [Cédric RICARD]
+- Fix isort upgrade. [Cédric RICARD]
+
+
 0.0.5 (2020-06-14)
 ------------------
 - Fix tests. [Cédric RICARD]

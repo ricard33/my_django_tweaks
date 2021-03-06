@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.conf.urls import url
+from django.urls import re_path
 from django.test import TestCase
 from django.test import override_settings
 from django_filters.rest_framework import DjangoFilterBackend
@@ -34,7 +34,7 @@ class SampleModelForAutofilterSerializerVer2(serializers.ModelSerializer):
 class SampleFilterClass(FilterSet):
     class Meta:
         model = SampleModelForAutofilter
-        fields = ("non_indexed_email", )
+        fields = ("non_indexed_email",)
 
 
 class SampleFilterClassV2(FilterSet):
@@ -58,21 +58,21 @@ class SampleApiV2(ListAPIView):
     queryset = SampleModelForAutofilter.objects.all()
 
 
-@autofilter(extra_ordering=("non_indexed_fk", ), extra_filter=("non_indexed_int", "some_property"))
+@autofilter(extra_ordering=("non_indexed_fk",), extra_filter=("non_indexed_int", "some_property"))
 class SampleApiV3(ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = SampleModelForAutofilterSerializerVer1
     queryset = SampleModelForAutofilter.objects.all()
-    ordering_fields = ("non_indexed_char", )
-    filter_fields = ("non_indexed_email", )
+    ordering_fields = ("non_indexed_char",)
+    filterset_fields = ("non_indexed_email",)
 
 
-@autofilter(extra_filter=("non_indexed_int", ))
+@autofilter(extra_filter=("non_indexed_int",))
 class SampleApiV4(ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = SampleModelForAutofilterSerializerVer1
     queryset = SampleModelForAutofilter.objects.all()
-    filter_class = SampleFilterClass
+    filterset_class = SampleFilterClass
 
 
 @autofilter()
@@ -80,7 +80,7 @@ class SampleApiV5(ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = SampleModelForAutofilterSerializerVer1
     queryset = SampleModelForAutofilter.objects.all()
-    filter_class = SampleFilterClass
+    filterset_class = SampleFilterClass
 
 
 @autofilter()
@@ -88,12 +88,12 @@ class SampleApiV6(ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = SampleModelForAutofilterSerializerVer1
     queryset = SampleModelForAutofilter.objects.all()
-    filter_class = SampleFilterClassV2
+    filterset_class = SampleFilterClassV2
 
 
 urlpatterns = [
-    url(r"^autofilter/$", SampleApiV1.as_view(), name="autofilter_test"),
-    url(r"^autofilter-with-class/$", SampleApiV1.as_view(), name="autofilter_with_class_test"),
+    re_path(r"^autofilter/$", SampleApiV1.as_view(), name="autofilter_test"),
+    re_path(r"^autofilter-with-class/$", SampleApiV1.as_view(), name="autofilter_with_class_test"),
 ]
 
 
@@ -154,53 +154,56 @@ class TestAutoFilter(TestCase):
                                                             "non_indexed_char", "nullable_field", "unique_text"})
 
     def test_adding_filter_fields(self):
-        self.assertEqual(set(SampleApiV1.filter_fields.keys()), {"id", "fk", "indexed_int", "indexed_char",
-                                                                 "indexed_text", "indexed_url", "indexed_email",
-                                                                 "nullable_field", "unique_text"})
-        self.assertEqual(set(SampleApiV2.filter_fields.keys()), {"id", "fk", "indexed_int", "indexed_char"})
+        self.assertEqual(set(SampleApiV1.filterset_fields.keys()), {"id", "fk", "indexed_int", "indexed_char",
+                                                                    "indexed_text", "indexed_url", "indexed_email",
+                                                                    "nullable_field", "unique_text"})
+        self.assertEqual(set(SampleApiV2.filterset_fields.keys()), {"id", "fk", "indexed_int", "indexed_char"})
 
         for key in ("id", "fk", "indexed_int"):
-            self.assertEqual(SampleApiV1.filter_fields[key], ["exact", "gt", "gte", "lt", "lte", "in", "isnull"])
+            self.assertEqual(SampleApiV1.filterset_fields[key], ["exact", "gt", "gte", "lt", "lte", "in", "isnull"])
         for key in ("indexed_char", "indexed_text", "indexed_url", "indexed_email", "unique_text"):
             self.assertEqual(
-                SampleApiV1.filter_fields[key],
+                SampleApiV1.filterset_fields[key],
                 ["exact", "gt", "gte", "lt", "lte", "in", "isnull", "icontains", "istartswith"])
 
     def test_adding_filter_fields_with_extra_and_explicit(self):
-        self.assertEqual(set(SampleApiV3.filter_fields.keys()), {"id", "fk", "indexed_int", "indexed_char",
-                                                                 "indexed_text", "indexed_url", "indexed_email",
-                                                                 "non_indexed_int", "non_indexed_email",
-                                                                 "nullable_field", "unique_text"})
+        self.assertEqual(set(SampleApiV3.filterset_fields.keys()), {"id", "fk", "indexed_int", "indexed_char",
+                                                                    "indexed_text", "indexed_url", "indexed_email",
+                                                                    "non_indexed_int", "non_indexed_email",
+                                                                    "nullable_field", "unique_text"})
 
     def test_adding_filter_fields_with_extra_andfilter_class(self):
-        self.assertNotEqual(SampleApiV4.filter_class, SampleApiV5.filter_class)
-        self.assertNotEqual(SampleApiV4.filter_class.Meta, SampleApiV5.filter_class.Meta)
+        self.assertNotEqual(SampleApiV4.filterset_class, SampleApiV5.filterset_class)
+        self.assertNotEqual(SampleApiV4.filterset_class.Meta, SampleApiV5.filterset_class.Meta)
 
-        self.assertEqual(set(SampleApiV4.filter_class.Meta.fields.keys()), {"id", "fk", "indexed_int", "indexed_char",
-                                                                            "indexed_text", "indexed_url",
-                                                                            "indexed_email", "non_indexed_int",
-                                                                            "non_indexed_email", "nullable_field",
-                                                                            "unique_text"})
+        self.assertEqual(set(SampleApiV4.filterset_class.Meta.fields.keys()),
+                         {"id", "fk", "indexed_int", "indexed_char",
+                          "indexed_text", "indexed_url",
+                          "indexed_email", "non_indexed_int",
+                          "non_indexed_email", "nullable_field",
+                          "unique_text"})
 
-        self.assertEqual(set(SampleApiV5.filter_class.Meta.fields.keys()), {"id", "fk", "indexed_int", "indexed_char",
-                                                                            "indexed_text", "indexed_url",
-                                                                            "indexed_email", "non_indexed_email",
-                                                                            "nullable_field", "unique_text"})
+        self.assertEqual(set(SampleApiV5.filterset_class.Meta.fields.keys()),
+                         {"id", "fk", "indexed_int", "indexed_char",
+                          "indexed_text", "indexed_url",
+                          "indexed_email", "non_indexed_email",
+                          "nullable_field", "unique_text"})
 
-        self.assertEqual(set(SampleApiV6.filter_class.Meta.fields.keys()), {"id", "fk", "indexed_int", "indexed_char",
-                                                                            "indexed_text", "indexed_url",
-                                                                            "indexed_email", "non_indexed_email",
-                                                                            "nullable_field", "unique_text"})
+        self.assertEqual(set(SampleApiV6.filterset_class.Meta.fields.keys()),
+                         {"id", "fk", "indexed_int", "indexed_char",
+                          "indexed_text", "indexed_url",
+                          "indexed_email", "non_indexed_email",
+                          "nullable_field", "unique_text"})
 
     def test_excluding_fields(self):
-        @autofilter(exclude_fields=("indexed_int", "indexed_char", ))
+        @autofilter(exclude_fields=("indexed_int", "indexed_char",))
         class SampleApiV7(ListAPIView):
             permission_classes = (AllowAny,)
             serializer_class = SampleModelForAutofilterSerializerVer1
             queryset = SampleModelForAutofilter.objects.all()
 
-        self.assertEqual(set(SampleApiV7.filter_fields.keys()), {"id", "fk", "indexed_text", "indexed_url",
-                                                                 "indexed_email", "nullable_field", "unique_text"})
+        self.assertEqual(set(SampleApiV7.filterset_fields.keys()), {"id", "fk", "indexed_text", "indexed_url",
+                                                                    "indexed_email", "nullable_field", "unique_text"})
 
     def test_integration_filtering(self):
         response = self.client.get(reverse("autofilter_test"), data={"id__gt": 0})

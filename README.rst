@@ -198,7 +198,7 @@ Rationale
 
 There are nice OrderingFilter and DjangoFilterBackend backends in place, however sorting and filtering fields have to be declared explicitly, which is sometimes time consuming. That's why we've created a decorator that allows to sort & filter (with some extra lookup methods by default) by all the indexed fields present in model and in serializer class (as non write-only). Non-indexed fields may also be added to sorting & filtering, but it must be done explicitly - the idea is, that ordering or filtering by non-indexed field is not optimal from the DB perspective, so if the field is not included in sorting/filtering you should rather create index on it than declare it explicitly.
 
-Decorator works with explicitly defined FilterBackends, as well as with explicitly defined ordering_fields, filter_fields or filter_class. In order to work, it requires ModelSerializer (obtainable either serializer_class or get_serializer_class), from which fields & model class are extracted.
+Decorator works with explicitly defined FilterBackends, as well as with explicitly defined ordering_fields, filterset_fields or filterset_class. In order to work, it requires ModelSerializer (obtainable either serializer_class or get_serializer_class), from which fields & model class are extracted.
 
 Usage
 ~~~~~
@@ -220,9 +220,9 @@ Usage
     class SomeAPI(...):
         serializer_class = SomeModelSerializer
         ordering_fields = ("other_non_indexed_field", )
-        filter_fields = ("other_non_indexed_field", )
+        filterset_fields = ("other_non_indexed_field", )
 
-    # it works also when you have a custom filter_class set
+    # it works also when you have a custom filterset_class set
     class SomeFilter(filters.FilterSet):
         class Meta:
             model = SomeModel
@@ -231,7 +231,7 @@ Usage
     @autofilter()
     class SomeAPI(...):
         serializer_class = SomeModelSerializer
-        filter_class = SomeFilter
+        filterset_class = SomeFilter
 
 
 Pagination without counts

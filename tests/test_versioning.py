@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
-from django.conf.urls import url
+from django.urls import re_path
 from django.test import override_settings
 from rest_framework import serializers
 from rest_framework.generics import RetrieveUpdateAPIView
@@ -23,7 +23,6 @@ class SampleVersionedApiSerializerVer1(serializers.ModelSerializer):
 
 
 class SampleVersionedApiSerializerVer2(serializers.ModelSerializer):
-
     class Meta:
         model = SampleModel
         fields = ["a", "b"]
@@ -87,20 +86,20 @@ class SampleCustomDeprecatedVersionedApi(ApiVersionMixin, RetrieveUpdateAPIView)
 
 
 urlpatterns = [
-    url(r"^sample/(?P<pk>[\d]+)$", SampleVersionedApi.as_view(), name="sample_api"),
-    url(r"^sample/misconfigured/(?P<pk>[\d]+)$", SampleMisconfiguredApi.as_view(), name="sample_misconfigured_api"),
-    url(r"^sample/deprecated-custom/(?P<pk>[\d]+)$", SampleCustomDeprecatedVersionedApi.as_view(),
-        name="sample_custom_deprecated_api"),
-    url(r"^sample/deprecated-default/(?P<pk>[\d]+)$", SampleDefaultDeprecatedVersionedApi.as_view(),
-        name="sample_default_deprecated_api"),
+    re_path(r"^sample/(?P<pk>[\d]+)$", SampleVersionedApi.as_view(), name="sample_api"),
+    re_path(r"^sample/misconfigured/(?P<pk>[\d]+)$", SampleMisconfiguredApi.as_view(), name="sample_misconfigured_api"),
+    re_path(r"^sample/deprecated-custom/(?P<pk>[\d]+)$", SampleCustomDeprecatedVersionedApi.as_view(),
+            name="sample_custom_deprecated_api"),
+    re_path(r"^sample/deprecated-default/(?P<pk>[\d]+)$", SampleDefaultDeprecatedVersionedApi.as_view(),
+            name="sample_default_deprecated_api"),
 ]
 
 
 @override_settings(ROOT_URLCONF="tests.test_versioning",
                    API_VERSION_DEPRECATION_OFFSET=1,
                    API_VERSION_OBSOLETE_OFFSET=2,
-                   MIDDLEWARE=settings.MIDDLEWARE + ("my_django_tweaks.versioning.DeprecationMiddleware", ),
-                   MIDDLEWARE_CLASSES=settings.MIDDLEWARE + ("my_django_tweaks.versioning.DeprecationMiddleware", ))
+                   MIDDLEWARE=settings.MIDDLEWARE + ("my_django_tweaks.versioning.DeprecationMiddleware",),
+                   MIDDLEWARE_CLASSES=settings.MIDDLEWARE + ("my_django_tweaks.versioning.DeprecationMiddleware",))
 class VersioningApiTestCase(APITestCase):
     def setUp(self):
         self.sample1 = SampleModel.objects.create(a="a", b="b")

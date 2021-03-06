@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import pytest
-from django.conf.urls import url
+from django.urls import re_path
 from django.http import HttpResponse
 from django.test import override_settings
 
@@ -52,7 +52,7 @@ def grabby_select_view(request):
     return HttpResponse()
 
 
-urlpatterns = [url(r"", grabby_select_view, name="sample")]
+urlpatterns = [re_path(r"", grabby_select_view, name="sample")]
 
 
 class TestLockLimiter(DatabaseAccessLintingApiTestCase):

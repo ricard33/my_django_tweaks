@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import warnings
 
-from django.conf.urls import url
+from django.urls import re_path
 from django.http import HttpResponse
 from django.test import override_settings
 from rest_framework.reverse import reverse
@@ -32,9 +32,9 @@ def many_calls_partially_frozen_view(request, counted, frozen):
 
 
 urlpatterns = [
-    url(r"^sample/$", custom_view, name="sample"),
-    url(r"^calls/(?P<n>[0-9]+)/$", many_calls_view, name="calls"),
-    url(
+    re_path(r"^sample/$", custom_view, name="sample"),
+    re_path(r"^calls/(?P<n>[0-9]+)/$", many_calls_view, name="calls"),
+    re_path(
         r"^calls-partially-frozen/(?P<counted>[0-9]+)/(?P<frozen>[0-9]+)/$",
         many_calls_partially_frozen_view,
         name="calls-partially-frozen",
